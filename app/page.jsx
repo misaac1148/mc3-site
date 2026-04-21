@@ -603,8 +603,8 @@ export default function MC3GroupWebsite() {
         <section className="mx-auto max-w-7xl px-6 py-24">
           <SectionHeading
             eyebrow="Testimonials"
-            title="Built to sound premium without feeling abstract."
-            text="Placeholders for now, but the layout is ready for real client proof, outcomes, and case study-driven credibility."
+            title="What happens when everything starts working together."
+            text="More leads, better data, and systems that actually support growth. Here’s what our clients have experienced working with MC3."
             align="center"
           />
           <div className="mt-14 grid gap-6 lg:grid-cols-3">
@@ -914,9 +914,6 @@ export default function MC3GroupWebsite() {
                     </select>
                   </div>
                   <div className="md:col-span-2 flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs leading-6 text-zinc-500">
-                      This form is designed to feel premium now and can be connected later to a CRM, email, or automation workflow.
-                    </p>
                     <button type="button" className="rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]">
                       Submit Inquiry
                     </button>
