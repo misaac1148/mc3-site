@@ -673,10 +673,7 @@ export default function MC3GroupWebsite() {
                 </p>
                 <div className="mt-10 space-y-4 text-sm text-zinc-300">
                   <div className="flex items-center gap-3">
-                    <Mail size={16} className="text-zinc-500" /> hello@mc3grp.com
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Phone size={16} className="text-zinc-500" /> (555) 555-5555
+                    <Mail size={16} className="text-zinc-500" /> info@mc3grp.com
                   </div>
                 </div>
                 <button
