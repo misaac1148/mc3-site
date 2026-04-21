@@ -136,20 +136,20 @@ const faqs = [
 const testimonials = [
   {
     quote:
-      "MC3 helped us think beyond marketing tactics and actually build a cleaner growth system. We had more visibility and less chaos at the same time.",
-    name: "Sample Client",
+      "For the first time ever, my business is booked solid through the winter thanks to MC3.",
+    name: "Tom F.",
     role: "Service Business Owner",
   },
   {
     quote:
-      "The biggest win was clarity. We finally understood where leads were coming from, what was converting, and where follow-up was breaking.",
-    name: "Sample Client",
+      "The dashboards MC3 has created have helped our business make better operational decisions and save millions.",
+    name: "Shaun R.",
     role: "Operations Leader",
   },
   {
     quote:
-      "They translated automation and AI into practical business improvements instead of jargon. That made the whole thing feel usable immediately.",
-    name: "Sample Client",
+      "MC3 has successfully removed negative reviews from our Google profile that we had been trying to remove for years.",
+    name: "Chris H.",
     role: "Founder",
   },
 ];
@@ -745,8 +745,7 @@ export default function MC3GroupWebsite() {
             <div>
               <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Contact</div>
               <div className="mt-4 space-y-3 text-sm text-zinc-300">
-                <div>hello@mc3grp.com</div>
-                <div>(555) 555-5555</div>
+                <div>info@mc3grp.com</div>
                 <button onClick={() => setContactOpen(true)} className="transition hover:text-white">
                   Inquiry Form
                 </button>
