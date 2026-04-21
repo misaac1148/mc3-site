@@ -187,6 +187,57 @@ export default function MC3GroupWebsite() {
   const [division, setDivision] = useState("marketing");
   const [faqOpen, setFaqOpen] = useState(0);
 
+  const [formData, setFormData] = useState({
+  name: "",
+  email: "",
+  company: "",
+  phone: "",
+  interest: "MC3 Marketing",
+  message: "",
+  leadVolume: "Under 25",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formStatus, setFormStatus] = useState("");
+  
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setFormStatus("");
+
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to send inquiry");
+    }
+
+    setFormStatus("Thanks — your inquiry was sent.");
+    setFormData({
+      name: "",
+      email: "",
+      company: "",
+      phone: "",
+      interest: "MC3 Marketing",
+      message: "",
+      leadVolume: "Under 25",
+    });
+  } catch (error) {
+    setFormStatus("Something went wrong. Please email us directly at info@mc3grp.com.");
+  } finally {
+    setIsSubmitting(false);
+  }
+  };
   const activeDivision = useMemo(
     () =>
       division === "marketing"
@@ -887,39 +938,89 @@ export default function MC3GroupWebsite() {
                     <X size={18} />
                   </button>
                 </div>
-
-                <form className="mt-8 grid gap-5 md:grid-cols-2">
+                <form onSubmit={handleSubmit} className="mt-8 grid gap-5 md:grid-cols-2">
                   <div>
                     <label className="mb-2 block text-sm text-zinc-400">Full Name</label>
-                    <input className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25" placeholder="Your name" />
+                    <input
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25"
+                      placeholder="Your name"
+                      required
+                    />
                   </div>
+                
                   <div>
                     <label className="mb-2 block text-sm text-zinc-400">Email</label>
-                    <input type="email" className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25" placeholder="you@company.com" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25"
+                      placeholder="you@company.com"
+                      required
+                    />
                   </div>
+                
                   <div>
                     <label className="mb-2 block text-sm text-zinc-400">Company</label>
-                    <input className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25" placeholder="Business name" />
+                    <input
+                      name="company"
+                      value={formData.company}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25"
+                      placeholder="Business name"
+                    />
                   </div>
+                
                   <div>
                     <label className="mb-2 block text-sm text-zinc-400">Phone</label>
-                    <input className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25" placeholder="(555) 555-5555" />
+                    <input
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25"
+                      placeholder="(555) 555-5555"
+                    />
                   </div>
+                
                   <div className="md:col-span-2">
                     <label className="mb-2 block text-sm text-zinc-400">Primary Interest</label>
-                    <select className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25">
+                    <select
+                      name="interest"
+                      value={formData.interest}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25"
+                    >
                       <option>MC3 Marketing</option>
                       <option>MC3 Labs</option>
                       <option>Not sure yet</option>
                     </select>
                   </div>
+                
                   <div className="md:col-span-2">
                     <label className="mb-2 block text-sm text-zinc-400">What are you trying to improve?</label>
-                    <textarea rows={5} className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25" placeholder="Tell us about your goals, bottlenecks, current systems, or what feels messy right now." />
+                    <textarea
+                      rows={5}
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25"
+                      placeholder="Tell us about your goals, bottlenecks, current systems, or what feels messy right now."
+                      required
+                    />
                   </div>
+                
                   <div className="md:col-span-2">
                     <label className="mb-2 block text-sm text-zinc-400">Current Monthly Lead Volume</label>
-                    <select className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25">
+                    <select
+                      name="leadVolume"
+                      value={formData.leadVolume}
+                      onChange={handleChange}
+                      className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25"
+                    >
                       <option>Under 25</option>
                       <option>25–100</option>
                       <option>100–500</option>
@@ -927,10 +1028,19 @@ export default function MC3GroupWebsite() {
                       <option>Not sure</option>
                     </select>
                   </div>
+                
                   <div className="md:col-span-2 flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
-                    <button type="button" className="rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]">
-                      Submit Inquiry
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02] disabled:opacity-60"
+                    >
+                      {isSubmitting ? "Sending..." : "Submit Inquiry"}
                     </button>
+                
+                    {formStatus && (
+                      <p className="text-sm text-zinc-300">{formStatus}</p>
+                    )}
                   </div>
                 </form>
               </motion.div>
