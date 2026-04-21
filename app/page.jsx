@@ -673,7 +673,13 @@ export default function MC3GroupWebsite() {
                 </p>
                 <div className="mt-10 space-y-4 text-sm text-zinc-300">
                   <div className="flex items-center gap-3">
-                    <Mail size={16} className="text-zinc-500" /> info@mc3grp.com
+                    <Mail size={16} className="text-zinc-500" />
+                    <a
+                      href="mailto:info@mc3grp.com?subject=Inquiry%20from%20Website&body=Hi%20MC3%20Group,%0A%0A"
+                      className="hover:text-white transition-colors"
+                    >
+                      info@mc3grp.com
+                    </a>
                   </div>
                 </div>
                 <button
@@ -742,7 +748,15 @@ export default function MC3GroupWebsite() {
             <div>
               <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Contact</div>
               <div className="mt-4 space-y-3 text-sm text-zinc-300">
-                <div>info@mc3grp.com</div>
+                  <div className="flex items-center gap-3">
+                    <Mail size={16} className="text-zinc-500" />
+                    <a
+                      href="mailto:info@mc3grp.com?subject=Inquiry%20from%20Website&body=Hi%20MC3%20Group,%0A%0A"
+                      className="hover:text-white transition-colors"
+                    >
+                      info@mc3grp.com
+                    </a>
+                  </div>
                 <button onClick={() => setContactOpen(true)} className="transition hover:text-white">
                   Inquiry Form
                 </button>
