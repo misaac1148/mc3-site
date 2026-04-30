@@ -1,18 +1,66 @@
-export const metadata = {
-  title: "Post-Quantum Cryptography Readiness Audit | MC3 Group",
-  description:
-    "PQC readiness audits for government contractors, subcontractors, and security-focused organizations preparing for post-quantum cryptography requirements.",
-};
+"use client";
+
+import { useState } from "react";
 
 export default function PQCLandingPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    company: "",
+    message: "",
+    interest: "PQC Readiness Audit",
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formStatus, setFormStatus] = useState("");
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setFormStatus("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to send inquiry");
+      }
+
+      setFormStatus("Thanks — your PQC audit request was sent.");
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        message: "",
+        interest: "PQC Readiness Audit",
+      });
+    } catch (error) {
+      setFormStatus(
+        "Something went wrong. Please email us directly at info@mc3grp.com."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
-      {/* Sticky CTA */}
       <div className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/90 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4">
-          <p className="text-sm text-slate-300">
-            PQC Readiness Audits for government contractors
-          </p>
+          <a href="/" className="text-sm font-semibold text-white">
+            MC3 Group
+          </a>
           <a
             href="#contact"
             className="rounded-lg bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
@@ -22,7 +70,6 @@ export default function PQCLandingPage() {
         </div>
       </div>
 
-      {/* Hero */}
       <section className="relative overflow-hidden px-6 py-20 lg:px-8">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.22),transparent_35%),radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.18),transparent_30%)]" />
 
@@ -58,46 +105,37 @@ export default function PQCLandingPage() {
                 See What’s Included
               </a>
             </div>
-
-            <p className="mt-5 text-sm text-slate-400">
-              Built for organizations that need a practical audit, executive
-              reporting, and a roadmap their team or another contractor can
-              implement.
-            </p>
           </div>
         </div>
       </section>
 
-      {/* Urgency */}
       <section className="border-y border-white/10 bg-white/[0.03] px-6 py-12 lg:px-8">
         <div className="mx-auto grid max-w-6xl gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-            <p className="text-2xl font-bold text-cyan-300">NIST Standards</p>
-            <p className="mt-2 text-slate-300">
-              The first federal post-quantum cryptography standards have been
-              finalized.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-            <p className="text-2xl font-bold text-cyan-300">CISA Guidance</p>
-            <p className="mt-2 text-slate-300">
-              Organizations are being encouraged to inventory cryptography and
-              prepare quantum-readiness roadmaps.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-            <p className="text-2xl font-bold text-cyan-300">Contract Pressure</p>
-            <p className="mt-2 text-slate-300">
-              Prime contractors and regulated buyers will increasingly expect
-              vendors to explain their PQC plan.
-            </p>
-          </div>
+          {[
+            [
+              "NIST Standards",
+              "The first federal post-quantum cryptography standards have been finalized.",
+            ],
+            [
+              "CISA Guidance",
+              "Organizations are being encouraged to inventory cryptography and prepare quantum-readiness roadmaps.",
+            ],
+            [
+              "Contract Pressure",
+              "Prime contractors and regulated buyers will increasingly expect vendors to explain their PQC plan.",
+            ],
+          ].map(([title, text]) => (
+            <div
+              key={title}
+              className="rounded-2xl border border-white/10 bg-white/[0.04] p-6"
+            >
+              <p className="text-2xl font-bold text-cyan-300">{title}</p>
+              <p className="mt-2 text-slate-300">{text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Problem */}
       <section className="px-6 py-20 lg:px-8">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2 lg:items-center">
           <div>
@@ -114,9 +152,7 @@ export default function PQCLandingPage() {
 
             <p className="mt-4 text-lg leading-8 text-slate-300">
               Attackers can capture encrypted data now and decrypt it later when
-              capable quantum systems exist. That matters most for organizations
-              handling long-retention, sensitive, regulated, or government-
-              related information.
+              capable quantum systems exist.
             </p>
           </div>
 
@@ -134,7 +170,6 @@ export default function PQCLandingPage() {
         </div>
       </section>
 
-      {/* Audit Includes */}
       <section id="audit" className="bg-slate-900 px-6 py-20 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
@@ -143,8 +178,7 @@ export default function PQCLandingPage() {
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-300">
               This is an audit and recommendation engagement. We help you find
-              the gaps, understand the risk, and create a roadmap. Your internal
-              team or preferred contractor can handle implementation.
+              the gaps, understand the risk, and create a roadmap.
             </p>
           </div>
 
@@ -187,7 +221,6 @@ export default function PQCLandingPage() {
         </div>
       </section>
 
-      {/* Who */}
       <section className="px-6 py-20 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
@@ -222,7 +255,6 @@ export default function PQCLandingPage() {
         </div>
       </section>
 
-      {/* Process */}
       <section className="bg-white px-6 py-20 text-slate-950 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -265,7 +297,6 @@ export default function PQCLandingPage() {
         </div>
       </section>
 
-      {/* Offer */}
       <section className="px-6 py-20 lg:px-8">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
           <div>
@@ -274,7 +305,6 @@ export default function PQCLandingPage() {
               rushed migration.
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-300">
-              The wrong move is buying a solution before you know your exposure.
               MC3 Group gives you a practical, decision-ready report that helps
               leadership understand what matters, what can wait, and what needs
               immediate attention.
@@ -309,7 +339,6 @@ export default function PQCLandingPage() {
         </div>
       </section>
 
-      {/* Why MC3 */}
       <section className="bg-slate-900 px-6 py-20 lg:px-8">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
           <div>
@@ -318,8 +347,8 @@ export default function PQCLandingPage() {
             </h2>
             <p className="mt-5 text-lg leading-8 text-slate-300">
               You do not need a 200-page theoretical cryptography report. You
-              need a practical outside assessment that helps your leadership,
-              sales, compliance, and technical teams understand what to do next.
+              need a practical outside assessment your leadership, sales,
+              compliance, and technical teams can actually use.
             </p>
           </div>
 
@@ -335,7 +364,6 @@ export default function PQCLandingPage() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="px-6 py-20 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-3xl font-bold tracking-tight">FAQ</h2>
@@ -344,11 +372,11 @@ export default function PQCLandingPage() {
             {[
               [
                 "Is this the same as implementation?",
-                "No. This offer is focused on auditing, documenting risk, and recommending a migration path. Implementation can be handled by your internal team or another contractor.",
+                "No. This offer is focused on auditing, documenting risk, and recommending a migration path.",
               ],
               [
                 "What does PQC stand for?",
-                "PQC stands for post-quantum cryptography. It refers to cryptographic methods designed to remain secure against both classical and quantum computing threats.",
+                "PQC stands for post-quantum cryptography.",
               ],
               [
                 "Why should we care now?",
@@ -356,11 +384,11 @@ export default function PQCLandingPage() {
               ],
               [
                 "Do we need to replace everything immediately?",
-                "Usually no. The first move is inventory and prioritization. A strong roadmap helps avoid panic buying, poor implementation, and unnecessary disruption.",
+                "Usually no. The first move is inventory and prioritization.",
               ],
               [
                 "Can this help with customer or prime-contractor questionnaires?",
-                "Yes. One goal of the audit is to help you explain your PQC posture in a credible, practical way when customers, primes, or compliance teams start asking.",
+                "Yes. One goal of the audit is to help you explain your PQC posture in a credible, practical way.",
               ],
             ].map(([q, a]) => (
               <div
@@ -375,8 +403,10 @@ export default function PQCLandingPage() {
         </div>
       </section>
 
-      {/* Contact */}
-      <section id="contact" className="bg-white px-6 py-20 text-slate-950 lg:px-8">
+      <section
+        id="contact"
+        className="bg-white px-6 py-20 text-slate-950 lg:px-8"
+      >
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
           <div>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -399,11 +429,15 @@ export default function PQCLandingPage() {
           </div>
 
           <div className="rounded-3xl border border-slate-200 p-8 shadow-sm">
-            <form action="/api/contact" method="POST" className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <input type="hidden" name="interest" value={formData.interest} />
+
               <div>
                 <label className="block text-sm font-semibold">Name</label>
                 <input
                   name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   required
                   className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3"
                   placeholder="Your name"
@@ -415,6 +449,8 @@ export default function PQCLandingPage() {
                 <input
                   name="email"
                   type="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   required
                   className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3"
                   placeholder="you@company.com"
@@ -425,6 +461,8 @@ export default function PQCLandingPage() {
                 <label className="block text-sm font-semibold">Company</label>
                 <input
                   name="company"
+                  value={formData.company}
+                  onChange={handleChange}
                   className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3"
                   placeholder="Company name"
                 />
@@ -434,6 +472,8 @@ export default function PQCLandingPage() {
                 <label className="block text-sm font-semibold">Message</label>
                 <textarea
                   name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   required
                   rows={5}
                   className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3"
@@ -443,10 +483,17 @@ export default function PQCLandingPage() {
 
               <button
                 type="submit"
-                className="w-full rounded-xl bg-slate-950 px-6 py-4 font-semibold text-white hover:bg-slate-800"
+                disabled={isSubmitting}
+                className="w-full rounded-xl bg-slate-950 px-6 py-4 font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
               >
-                Submit Audit Request
+                {isSubmitting ? "Sending..." : "Submit Audit Request"}
               </button>
+
+              {formStatus && (
+                <p className="text-center text-sm text-slate-600">
+                  {formStatus}
+                </p>
+              )}
 
               <p className="text-center text-sm text-slate-500">
                 Or email directly: info@mc3grp.com
