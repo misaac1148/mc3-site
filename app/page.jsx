@@ -1,4 +1,5 @@
 "use client";
+
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -21,18 +22,20 @@ import {
   Phone,
   Search,
   Settings2,
+  ShieldCheck,
   Sparkles,
   Workflow,
   X,
 } from "lucide-react";
 
 const nav = [
-  { label: "Home", href: "home" },
-  { label: "Marketing", href: "marketing" },
-  { label: "Labs", href: "labs" },
-  { label: "Process", href: "process" },
-  { label: "FAQ", href: "faq" },
-  { label: "Contact", href: "contact" },
+  { label: "Home", href: "home", type: "scroll" },
+  { label: "Marketing", href: "marketing", type: "scroll" },
+  { label: "Labs", href: "labs", type: "scroll" },
+  { label: "PQC Audit", href: "/pqc", type: "route" },
+  { label: "Process", href: "process", type: "scroll" },
+  { label: "FAQ", href: "faq", type: "scroll" },
+  { label: "Contact", href: "contact", type: "scroll" },
 ];
 
 const marketingServices = [
@@ -79,6 +82,12 @@ const labsServices = [
     title: "Content Systems",
     text: "Repeatable content engines that make creation faster, cleaner, and more aligned with your growth strategy.",
   },
+  {
+    icon: ShieldCheck,
+    title: "PQC Readiness Audits",
+    text: "Post-quantum cryptography exposure reviews for government contractors and security-focused organizations preparing for quantum-era requirements.",
+    href: "/pqc",
+  },
 ];
 
 const processSteps = [
@@ -113,7 +122,7 @@ const stats = [
 const faqs = [
   {
     q: "What is the difference between MC3 Marketing and MC3 Labs?",
-    a: "MC3 Marketing focuses on visibility, demand capture, and conversion from the front end. MC3 Labs focuses on leverage behind the scenes through analytics, automation, AI, and operational systems.",
+    a: "MC3 Marketing focuses on visibility, demand capture, and conversion from the front end. MC3 Labs focuses on leverage behind the scenes through analytics, automation, AI, security readiness, and operational systems.",
   },
   {
     q: "Do I need both divisions to work with MC3?",
@@ -121,15 +130,19 @@ const faqs = [
   },
   {
     q: "Who is MC3 best suited for?",
-    a: "MC3 is built for established service businesses and growing teams that want smarter systems, better lead quality, stronger follow-up, and less chaos.",
+    a: "MC3 is built for established service businesses, government contractors, and growing teams that want smarter systems, better lead quality, stronger follow-up, cleaner operations, and less chaos.",
   },
   {
     q: "How do you approach AI?",
     a: "Pragmatically. We focus on useful implementations that improve workflow, speed, visibility, and output rather than trendy tools with no operational ROI.",
   },
   {
+    q: "Do you offer post-quantum cryptography implementation?",
+    a: "MC3 currently focuses on PQC readiness audits, exposure reviews, vendor readiness checks, and roadmap recommendations. Implementation can be handled by your internal team or another technical contractor.",
+  },
+  {
     q: "Do you offer custom engagements?",
-    a: "Yes. Some clients need a focused monthly system, while others need a tailored blend of visibility, analytics, and automation. The strategy call helps determine the right structure.",
+    a: "Yes. Some clients need a focused monthly system, while others need a tailored blend of visibility, analytics, automation, AI, security readiness, and operational strategy.",
   },
 ];
 
@@ -156,9 +169,17 @@ const testimonials = [
 
 function SectionHeading({ eyebrow, title, text, align = "left" }) {
   return (
-    <div className={align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-3xl"}>
-      <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">{eyebrow}</div>
-      <h2 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl">{title}</h2>
+    <div
+      className={
+        align === "center" ? "mx-auto max-w-3xl text-center" : "max-w-3xl"
+      }
+    >
+      <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">
+        {eyebrow}
+      </div>
+      <h2 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+        {title}
+      </h2>
       <p className="mt-5 text-lg leading-8 text-zinc-400">{text}</p>
     </div>
   );
@@ -166,7 +187,9 @@ function SectionHeading({ eyebrow, title, text, align = "left" }) {
 
 function Card({ children, className = "" }) {
   return (
-    <div className={`rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl ${className}`}>
+    <div
+      className={`rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl ${className}`}
+    >
       {children}
     </div>
   );
@@ -188,56 +211,60 @@ export default function MC3GroupWebsite() {
   const [faqOpen, setFaqOpen] = useState(0);
 
   const [formData, setFormData] = useState({
-  name: "",
-  email: "",
-  company: "",
-  phone: "",
-  interest: "MC3 Marketing",
-  message: "",
-  leadVolume: "Under 25",
+    name: "",
+    email: "",
+    company: "",
+    phone: "",
+    interest: "MC3 Marketing",
+    message: "",
+    leadVolume: "Under 25",
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStatus, setFormStatus] = useState("");
-  
+
   const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setFormStatus("");
+    e.preventDefault();
+    setIsSubmitting(true);
+    setFormStatus("");
 
-  try {
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (!res.ok) {
-      throw new Error("Failed to send inquiry");
+      if (!res.ok) {
+        throw new Error("Failed to send inquiry");
+      }
+
+      setFormStatus("Thanks — your inquiry was sent.");
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        phone: "",
+        interest: "MC3 Marketing",
+        message: "",
+        leadVolume: "Under 25",
+      });
+    } catch (error) {
+      setFormStatus(
+        "Something went wrong. Please email us directly at info@mc3grp.com."
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setFormStatus("Thanks — your inquiry was sent.");
-    setFormData({
-      name: "",
-      email: "",
-      company: "",
-      phone: "",
-      interest: "MC3 Marketing",
-      message: "",
-      leadVolume: "Under 25",
-    });
-  } catch (error) {
-    setFormStatus("Something went wrong. Please email us directly at info@mc3grp.com.");
-  } finally {
-    setIsSubmitting(false);
-  }
   };
+
   const activeDivision = useMemo(
     () =>
       division === "marketing"
@@ -255,7 +282,7 @@ export default function MC3GroupWebsite() {
             name: "MC3 Labs",
             tagline: "More Creativity. More Clarity. More Control.",
             summary:
-              "A systems and intelligence division focused on operational leverage through analytics, automation, AI, and cleaner execution.",
+              "A systems, intelligence, and security-readiness division focused on operational leverage through analytics, automation, AI, PQC readiness, and cleaner execution.",
             href: "labs",
             color: "from-fuchsia-400 to-violet-300",
             badge: "Leverage Engine",
@@ -271,6 +298,15 @@ export default function MC3GroupWebsite() {
     setExploreOpen(false);
   };
 
+  const handleNavClick = (item) => {
+    if (item.type === "route") {
+      window.location.href = item.href;
+      return;
+    }
+
+    scrollToId(item.href);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black">
       <div className="fixed inset-0 -z-10 overflow-hidden">
@@ -283,21 +319,26 @@ export default function MC3GroupWebsite() {
 
       <header className="sticky top-0 z-40 border-b border-white/10 bg-black/40 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <button onClick={() => scrollToId("home")} className="group flex items-center gap-3 text-left">
+          <button
+            onClick={() => scrollToId("home")}
+            className="group flex items-center gap-3 text-left"
+          >
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-sm font-semibold tracking-[0.24em]">
               MC3
             </div>
             <div>
               <div className="text-sm font-semibold">MC3 Group</div>
-              <div className="text-xs uppercase tracking-[0.26em] text-zinc-500">Growth Systems</div>
+              <div className="text-xs uppercase tracking-[0.26em] text-zinc-500">
+                Growth Systems
+              </div>
             </div>
           </button>
 
           <nav className="hidden items-center gap-7 md:flex">
             {nav.map((item) => (
               <button
-                key={item.href}
-                onClick={() => scrollToId(item.href)}
+                key={item.label}
+                onClick={() => handleNavClick(item)}
                 className="text-sm text-zinc-300 transition hover:text-white"
               >
                 {item.label}
@@ -306,6 +347,12 @@ export default function MC3GroupWebsite() {
           </nav>
 
           <div className="hidden md:flex md:items-center md:gap-3">
+            <a
+              href="/pqc"
+              className="rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2.5 text-sm font-medium text-cyan-200 transition hover:bg-cyan-400/15"
+            >
+              PQC Audit
+            </a>
             <button
               onClick={() => setExploreOpen(true)}
               className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-white/[0.08]"
@@ -339,8 +386,8 @@ export default function MC3GroupWebsite() {
               <div className="space-y-2 px-6 py-4">
                 {nav.map((item) => (
                   <button
-                    key={item.href}
-                    onClick={() => scrollToId(item.href)}
+                    key={item.label}
+                    onClick={() => handleNavClick(item)}
                     className="block w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm text-zinc-200"
                   >
                     {item.label}
@@ -371,7 +418,10 @@ export default function MC3GroupWebsite() {
       </header>
 
       <main>
-        <section id="home" className="mx-auto max-w-7xl px-6 pb-20 pt-16 md:pb-28 md:pt-24">
+        <section
+          id="home"
+          className="mx-auto max-w-7xl px-6 pb-20 pt-16 md:pb-28 md:pt-24"
+        >
           <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
             <div>
               <Pill>MC3 Group</Pill>
@@ -385,7 +435,10 @@ export default function MC3GroupWebsite() {
                 </span>
               </h1>
               <p className="mt-8 max-w-2xl text-lg leading-8 text-zinc-400 md:text-xl">
-                MC3 Group builds premium growth systems for businesses that want stronger visibility, better operations, cleaner data, and practical AI leverage.
+                MC3 Group builds premium growth systems for businesses that
+                want stronger visibility, better operations, cleaner data,
+                practical AI leverage, and smarter readiness for emerging
+                security demands.
               </p>
 
               <div className="mt-10 flex flex-wrap gap-4">
@@ -394,8 +447,17 @@ export default function MC3GroupWebsite() {
                   className="group inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
                 >
                   Explore MC3
-                  <ArrowRight size={16} className="transition group-hover:translate-x-0.5" />
+                  <ArrowRight
+                    size={16}
+                    className="transition group-hover:translate-x-0.5"
+                  />
                 </button>
+                <a
+                  href="/pqc"
+                  className="rounded-2xl border border-cyan-400/30 bg-cyan-400/10 px-6 py-3.5 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-400/15"
+                >
+                  Explore PQC Audits
+                </a>
                 <button
                   onClick={() => setContactOpen(true)}
                   className="rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
@@ -408,7 +470,9 @@ export default function MC3GroupWebsite() {
                 {stats.map((stat) => (
                   <Card key={stat.label} className="p-5">
                     <div className="text-3xl font-semibold">{stat.value}</div>
-                    <div className="mt-2 text-sm text-zinc-400">{stat.label}</div>
+                    <div className="mt-2 text-sm text-zinc-400">
+                      {stat.label}
+                    </div>
                   </Card>
                 ))}
               </div>
@@ -436,15 +500,23 @@ export default function MC3GroupWebsite() {
                     ].map((item) => {
                       const Icon = item.icon;
                       return (
-                        <div key={item.label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                        <div
+                          key={item.label}
+                          className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+                        >
                           <Icon size={18} className="text-zinc-300" />
-                          <div className="mt-4 text-xs uppercase tracking-[0.28em] text-zinc-500">{item.label}</div>
-                          <div className="mt-2 text-lg font-medium">{item.value}</div>
+                          <div className="mt-4 text-xs uppercase tracking-[0.28em] text-zinc-500">
+                            {item.label}
+                          </div>
+                          <div className="mt-2 text-lg font-medium">
+                            {item.value}
+                          </div>
                         </div>
                       );
                     })}
                   </div>
-                </Card>              </motion.div>
+                </Card>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -452,25 +524,41 @@ export default function MC3GroupWebsite() {
         <section className="mx-auto max-w-7xl px-6 py-8 md:py-12">
           <Card className="grid gap-6 p-6 md:grid-cols-[1.1fr_0.9fr] md:p-8">
             <div>
-              <div className="text-xs uppercase tracking-[0.32em] text-zinc-500">Brand Architecture</div>
-              <h3 className="mt-3 text-2xl font-semibold">One strategic umbrella. Two focused engines.</h3>
+              <div className="text-xs uppercase tracking-[0.32em] text-zinc-500">
+                Brand Architecture
+              </div>
+              <h3 className="mt-3 text-2xl font-semibold">
+                One strategic umbrella. Two focused engines.
+              </h3>
               <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-400">
-                MC3 Group is designed to help businesses generate demand on the front end and create leverage on the backend. Start with the system you need now, then expand as complexity and opportunity grow.
+                MC3 Group is designed to help businesses generate demand on the
+                front end and create leverage on the backend. Start with the
+                system you need now, then expand as complexity and opportunity
+                grow.
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <Card className="p-5">
-                <div className="text-xs uppercase tracking-[0.28em] text-blue-400">MC3 Marketing</div>
-                <div className="mt-3 text-xl font-semibold">More Clicks. More Calls. More Customers.</div>
+                <div className="text-xs uppercase tracking-[0.28em] text-blue-400">
+                  MC3 Marketing
+                </div>
+                <div className="mt-3 text-xl font-semibold">
+                  More Clicks. More Calls. More Customers.
+                </div>
                 <p className="mt-3 text-sm leading-7 text-zinc-400">
                   Visibility, search presence, reputation, and demand generation.
                 </p>
               </Card>
               <Card className="p-5">
-                <div className="text-xs uppercase tracking-[0.28em] text-fuchsia-400">MC3 Labs</div>
-                <div className="mt-3 text-xl font-semibold">More Creativity. More Clarity. More Control.</div>
+                <div className="text-xs uppercase tracking-[0.28em] text-fuchsia-400">
+                  MC3 Labs
+                </div>
+                <div className="mt-3 text-xl font-semibold">
+                  More Creativity. More Clarity. More Control.
+                </div>
                 <p className="mt-3 text-sm leading-7 text-zinc-400">
-                  Analytics, automation, AI integration, and operational leverage.
+                  Analytics, automation, AI integration, PQC readiness, and
+                  operational leverage.
                 </p>
               </Card>
             </div>
@@ -487,12 +575,19 @@ export default function MC3GroupWebsite() {
             {marketingServices.map((service) => {
               const Icon = service.icon;
               return (
-                <Card key={service.title} className="p-6 transition hover:-translate-y-1">
+                <Card
+                  key={service.title}
+                  className="p-6 transition hover:-translate-y-1"
+                >
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
                     <Icon size={20} />
                   </div>
-                  <h3 className="mt-6 text-xl font-semibold">{service.title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-zinc-400">{service.text}</p>
+                  <h3 className="mt-6 text-xl font-semibold">
+                    {service.title}
+                  </h3>
+                  <p className="mt-4 text-sm leading-7 text-zinc-400">
+                    {service.text}
+                  </p>
                 </Card>
               );
             })}
@@ -503,22 +598,92 @@ export default function MC3GroupWebsite() {
           <SectionHeading
             eyebrow="MC3 Labs"
             title="Engineer systems that create leverage."
-            text="MC3 Labs helps businesses increase output and reduce friction through practical analytics, automation, AI tooling, and content infrastructure."
+            text="MC3 Labs helps businesses increase output and reduce friction through practical analytics, automation, AI tooling, security readiness, and content infrastructure."
           />
-          <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
             {labsServices.map((service) => {
               const Icon = service.icon;
-              return (
-                <Card key={service.title} className="p-6 transition hover:-translate-y-1">
+
+              const content = (
+                <Card
+                  key={service.title}
+                  className="h-full p-6 transition hover:-translate-y-1"
+                >
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
                     <Icon size={20} />
                   </div>
-                  <h3 className="mt-6 text-xl font-semibold">{service.title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-zinc-400">{service.text}</p>
+                  <h3 className="mt-6 text-xl font-semibold">
+                    {service.title}
+                  </h3>
+                  <p className="mt-4 text-sm leading-7 text-zinc-400">
+                    {service.text}
+                  </p>
+                  {service.href && (
+                    <div className="mt-6 text-sm font-semibold text-cyan-300">
+                      Learn more →
+                    </div>
+                  )}
                 </Card>
+              );
+
+              return service.href ? (
+                <a key={service.title} href={service.href}>
+                  {content}
+                </a>
+              ) : (
+                content
               );
             })}
           </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-6 py-24">
+          <Card className="overflow-hidden p-0">
+            <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+              <div className="border-b border-white/10 p-8 md:p-10 lg:border-b-0 lg:border-r">
+                <div className="text-xs uppercase tracking-[0.32em] text-cyan-400">
+                  New Offering
+                </div>
+                <h2 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
+                  Post-quantum cryptography readiness for contractors and
+                  security-conscious companies.
+                </h2>
+                <p className="mt-6 max-w-xl text-base leading-8 text-zinc-400">
+                  MC3 Labs now offers PQC readiness audits that help
+                  organizations identify cryptographic exposure, document risk,
+                  and build a practical migration roadmap before customer,
+                  compliance, or contract pressure hits.
+                </p>
+                <a
+                  href="/pqc"
+                  className="mt-10 inline-flex items-center gap-2 rounded-2xl bg-cyan-400 px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
+                >
+                  View PQC Audit Page
+                  <ArrowRight size={16} />
+                </a>
+              </div>
+              <div className="p-8 md:p-10">
+                <div className="grid gap-4 md:grid-cols-2">
+                  {[
+                    "Cryptographic inventory",
+                    "Vendor readiness review",
+                    "Government contractor positioning",
+                    "Risk prioritization",
+                    "Migration roadmap",
+                    "Executive reporting",
+                  ].map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm text-zinc-300"
+                    >
+                      <CheckCircle2 size={16} className="text-cyan-400" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Card>
         </section>
 
         <section className="mx-auto max-w-7xl px-6 py-24">
@@ -560,13 +725,21 @@ export default function MC3GroupWebsite() {
               transition={{ duration: 0.35 }}
             >
               <Card className="overflow-hidden p-0">
-                <div className={`h-2 w-full bg-gradient-to-r ${activeDivision.color}`} />
+                <div
+                  className={`h-2 w-full bg-gradient-to-r ${activeDivision.color}`}
+                />
                 <div className="p-7 md:p-8">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                      <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">{activeDivision.badge}</div>
-                      <h3 className="mt-3 text-3xl font-semibold">{activeDivision.name}</h3>
-                      <div className="mt-2 text-lg text-zinc-300">{activeDivision.tagline}</div>
+                      <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+                        {activeDivision.badge}
+                      </div>
+                      <h3 className="mt-3 text-3xl font-semibold">
+                        {activeDivision.name}
+                      </h3>
+                      <div className="mt-2 text-lg text-zinc-300">
+                        {activeDivision.tagline}
+                      </div>
                     </div>
                     <button
                       onClick={() => scrollToId(activeDivision.href)}
@@ -575,15 +748,33 @@ export default function MC3GroupWebsite() {
                       View Section
                     </button>
                   </div>
-                  <p className="mt-6 max-w-3xl text-base leading-7 text-zinc-400">{activeDivision.summary}</p>
+                  <p className="mt-6 max-w-3xl text-base leading-7 text-zinc-400">
+                    {activeDivision.summary}
+                  </p>
                   <div className="mt-8 grid gap-4 md:grid-cols-2">
                     {activeDivision.services.slice(0, 4).map((item) => (
-                      <div key={item.title} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                        <div className="text-base font-semibold">{item.title}</div>
-                        <div className="mt-3 text-sm leading-7 text-zinc-400">{item.text}</div>
+                      <div
+                        key={item.title}
+                        className="rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+                      >
+                        <div className="text-base font-semibold">
+                          {item.title}
+                        </div>
+                        <div className="mt-3 text-sm leading-7 text-zinc-400">
+                          {item.text}
+                        </div>
                       </div>
                     ))}
                   </div>
+                  {division === "labs" && (
+                    <a
+                      href="/pqc"
+                      className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-cyan-300 hover:text-cyan-200"
+                    >
+                      Explore PQC Readiness Audits
+                      <ArrowRight size={15} />
+                    </a>
+                  )}
                 </div>
               </Card>
             </motion.div>
@@ -600,9 +791,13 @@ export default function MC3GroupWebsite() {
           <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {processSteps.map((step) => (
               <Card key={step.number} className="p-6">
-                <div className="text-5xl font-semibold text-white/15">{step.number}</div>
+                <div className="text-5xl font-semibold text-white/15">
+                  {step.number}
+                </div>
                 <h3 className="mt-6 text-xl font-semibold">{step.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-zinc-400">{step.text}</p>
+                <p className="mt-4 text-sm leading-7 text-zinc-400">
+                  {step.text}
+                </p>
               </Card>
             ))}
           </div>
@@ -642,8 +837,12 @@ export default function MC3GroupWebsite() {
                 return (
                   <Card key={item.title} className="p-5">
                     <Icon size={18} className="text-zinc-300" />
-                    <div className="mt-4 text-lg font-semibold">{item.title}</div>
-                    <div className="mt-3 text-sm leading-7 text-zinc-400">{item.text}</div>
+                    <div className="mt-4 text-lg font-semibold">
+                      {item.title}
+                    </div>
+                    <div className="mt-3 text-sm leading-7 text-zinc-400">
+                      {item.text}
+                    </div>
                   </Card>
                 );
               })}
@@ -662,7 +861,9 @@ export default function MC3GroupWebsite() {
             {testimonials.map((t, i) => (
               <Card key={i} className="p-6">
                 <Sparkles size={18} className="text-zinc-300" />
-                <p className="mt-5 text-base leading-8 text-zinc-300">“{t.quote}”</p>
+                <p className="mt-5 text-base leading-8 text-zinc-300">
+                  “{t.quote}”
+                </p>
                 <div className="mt-8 border-t border-white/10 pt-5">
                   <div className="font-semibold">{t.name}</div>
                   <div className="text-sm text-zinc-500">{t.role}</div>
@@ -688,8 +889,15 @@ export default function MC3GroupWebsite() {
                     onClick={() => setFaqOpen(open ? -1 : index)}
                     className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left"
                   >
-                    <span className="text-base font-semibold md:text-lg">{faq.q}</span>
-                    <ChevronDown className={`transition ${open ? "rotate-180" : "rotate-0"}`} size={18} />
+                    <span className="text-base font-semibold md:text-lg">
+                      {faq.q}
+                    </span>
+                    <ChevronDown
+                      className={`transition ${
+                        open ? "rotate-180" : "rotate-0"
+                      }`}
+                      size={18}
+                    />
                   </button>
                   <AnimatePresence>
                     {open && (
@@ -715,19 +923,23 @@ export default function MC3GroupWebsite() {
           <Card className="overflow-hidden p-0">
             <div className="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
               <div className="border-b border-white/10 p-8 md:p-10 lg:border-b-0 lg:border-r">
-                <div className="text-xs uppercase tracking-[0.32em] text-zinc-500">Start Here</div>
+                <div className="text-xs uppercase tracking-[0.32em] text-zinc-500">
+                  Start Here
+                </div>
                 <h2 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">
                   Start the conversation with a sharper intake experience.
                 </h2>
                 <p className="mt-6 max-w-xl text-base leading-8 text-zinc-400">
-                  Whether you need stronger visibility, cleaner operations, or a system that ties both together, MC3 is designed to meet you at the right layer.
+                  Whether you need stronger visibility, cleaner operations, a
+                  PQC readiness audit, or a system that ties everything together,
+                  MC3 is designed to meet you at the right layer.
                 </p>
                 <div className="mt-10 space-y-4 text-sm text-zinc-300">
                   <div className="flex items-center gap-3">
                     <Mail size={16} className="text-zinc-500" />
                     <a
                       href="mailto:info@mc3grp.com?subject=Inquiry%20from%20Website&body=Hi%20MC3%20Group,%0A%0A"
-                      className="hover:text-white transition-colors"
+                      className="transition-colors hover:text-white"
                     >
                       info@mc3grp.com
                     </a>
@@ -748,9 +960,13 @@ export default function MC3GroupWebsite() {
                     "Analytics & dashboards",
                     "Automation systems",
                     "AI integration",
+                    "PQC readiness audits",
                     "Content systems",
                   ].map((item) => (
-                    <div key={item} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm text-zinc-300">
+                    <div
+                      key={item}
+                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-sm text-zinc-300"
+                    >
                       <CheckCircle2 size={16} className="text-zinc-500" />
                       {item}
                     </div>
@@ -771,44 +987,85 @@ export default function MC3GroupWebsite() {
               </div>
               <div>
                 <div className="font-semibold">MC3 Group</div>
-                <div className="text-xs uppercase tracking-[0.26em] text-zinc-500">More Clarity. More Control. More Conversion.</div>
+                <div className="text-xs uppercase tracking-[0.26em] text-zinc-500">
+                  More Clarity. More Control. More Conversion.
+                </div>
               </div>
             </div>
             <p className="mt-5 max-w-xl text-sm leading-7 text-zinc-500">
-              MC3 Group is the strategic umbrella for MC3 Marketing and MC3 Labs — designed to help businesses grow through visibility, intelligence, and leverage.
+              MC3 Group is the strategic umbrella for MC3 Marketing and MC3 Labs
+              — designed to help businesses grow through visibility,
+              intelligence, leverage, and practical readiness for emerging
+              technology shifts.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-3">
             <div>
-              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Navigate</div>
-              <div className="mt-4 space-y-3 text-sm text-zinc-300">
-                {nav.map((item) => (
-                  <button key={item.href} onClick={() => scrollToId(item.href)} className="block transition hover:text-white">
-                    {item.label}
-                  </button>
-                ))}
+              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+                Navigate
               </div>
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Divisions</div>
               <div className="mt-4 space-y-3 text-sm text-zinc-300">
-                <button onClick={() => scrollToId("marketing")} className="block transition hover:text-white">MC3 Marketing</button>
-                <button onClick={() => scrollToId("labs")} className="block transition hover:text-white">MC3 Labs</button>
-              </div>
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">Contact</div>
-              <div className="mt-4 space-y-3 text-sm text-zinc-300">
-                  <div className="flex items-center gap-3">
-                    <Mail size={16} className="text-zinc-500" />
+                {nav.map((item) =>
+                  item.type === "route" ? (
                     <a
-                      href="mailto:info@mc3grp.com?subject=Inquiry%20from%20Website&body=Hi%20MC3%20Group,%0A%0A"
-                      className="hover:text-white transition-colors"
+                      key={item.label}
+                      href={item.href}
+                      className="block transition hover:text-white"
                     >
-                      info@mc3grp.com
+                      {item.label}
                     </a>
-                  </div>
-                <button onClick={() => setContactOpen(true)} className="transition hover:text-white">
+                  ) : (
+                    <button
+                      key={item.label}
+                      onClick={() => scrollToId(item.href)}
+                      className="block transition hover:text-white"
+                    >
+                      {item.label}
+                    </button>
+                  )
+                )}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+                Divisions
+              </div>
+              <div className="mt-4 space-y-3 text-sm text-zinc-300">
+                <button
+                  onClick={() => scrollToId("marketing")}
+                  className="block transition hover:text-white"
+                >
+                  MC3 Marketing
+                </button>
+                <button
+                  onClick={() => scrollToId("labs")}
+                  className="block transition hover:text-white"
+                >
+                  MC3 Labs
+                </button>
+                <a href="/pqc" className="block transition hover:text-white">
+                  PQC Readiness Audit
+                </a>
+              </div>
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+                Contact
+              </div>
+              <div className="mt-4 space-y-3 text-sm text-zinc-300">
+                <div className="flex items-center gap-3">
+                  <Mail size={16} className="text-zinc-500" />
+                  <a
+                    href="mailto:info@mc3grp.com?subject=Inquiry%20from%20Website&body=Hi%20MC3%20Group,%0A%0A"
+                    className="transition-colors hover:text-white"
+                  >
+                    info@mc3grp.com
+                  </a>
+                </div>
+                <button
+                  onClick={() => setContactOpen(true)}
+                  className="transition hover:text-white"
+                >
                   Inquiry Form
                 </button>
               </div>
@@ -829,12 +1086,16 @@ export default function MC3GroupWebsite() {
               initial={{ opacity: 0, y: 20, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.96 }}
-              className="w-full max-w-5xl rounded-[32px] border border-white/10 bg-zinc-950/95 p-6 shadow-2xl md:p-8"
+              className="w-full max-w-6xl rounded-[32px] border border-white/10 bg-zinc-950/95 p-6 shadow-2xl md:p-8"
             >
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <div className="text-xs uppercase tracking-[0.32em] text-zinc-500">Explore MC3</div>
-                  <h3 className="mt-3 text-3xl font-semibold">Choose your path.</h3>
+                  <div className="text-xs uppercase tracking-[0.32em] text-zinc-500">
+                    Explore MC3
+                  </div>
+                  <h3 className="mt-3 text-3xl font-semibold">
+                    Choose your path.
+                  </h3>
                 </div>
                 <button
                   onClick={() => setExploreOpen(false)}
@@ -843,19 +1104,24 @@ export default function MC3GroupWebsite() {
                   <X size={18} />
                 </button>
               </div>
-              <div className="mt-8 grid gap-6 md:grid-cols-2">
+              <div className="mt-8 grid gap-6 md:grid-cols-3">
                 <Card className="group p-6 transition hover:-translate-y-1">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <div className="text-xs uppercase tracking-[0.28em] text-blue-400">MC3 Marketing</div>
-                      <div className="mt-3 text-2xl font-semibold">More Clicks. More Calls. More Customers.</div>
+                      <div className="text-xs uppercase tracking-[0.28em] text-blue-400">
+                        MC3 Marketing
+                      </div>
+                      <div className="mt-3 text-2xl font-semibold">
+                        More Clicks. More Calls. More Customers.
+                      </div>
                     </div>
                     <Gauge className="text-zinc-400" />
                   </div>
                   <p className="mt-5 text-sm leading-7 text-zinc-400">
-                    Built for businesses that need better local visibility, cleaner messaging, stronger trust, and more conversion.
+                    Built for businesses that need better local visibility,
+                    cleaner messaging, stronger trust, and more conversion.
                   </p>
-                  <div className="mt-6 flex gap-3">
+                  <div className="mt-6 flex flex-wrap gap-3">
                     <button
                       onClick={() => scrollToId("marketing")}
                       className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-black"
@@ -873,18 +1139,25 @@ export default function MC3GroupWebsite() {
                     </button>
                   </div>
                 </Card>
+
                 <Card className="group p-6 transition hover:-translate-y-1">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <div className="text-xs uppercase tracking-[0.28em] text-fuchsia-400">MC3 Labs</div>
-                      <div className="mt-3 text-2xl font-semibold">More Creativity. More Clarity. More Control.</div>
+                      <div className="text-xs uppercase tracking-[0.28em] text-fuchsia-400">
+                        MC3 Labs
+                      </div>
+                      <div className="mt-3 text-2xl font-semibold">
+                        More Creativity. More Clarity. More Control.
+                      </div>
                     </div>
                     <Workflow className="text-zinc-400" />
                   </div>
                   <p className="mt-5 text-sm leading-7 text-zinc-400">
-                    Built for teams that need analytics, automation, AI integration, and operational leverage that actually gets used.
+                    Built for teams that need analytics, automation, AI
+                    integration, and operational leverage that actually gets
+                    used.
                   </p>
-                  <div className="mt-6 flex gap-3">
+                  <div className="mt-6 flex flex-wrap gap-3">
                     <button
                       onClick={() => scrollToId("labs")}
                       className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-black"
@@ -899,6 +1172,46 @@ export default function MC3GroupWebsite() {
                       className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold"
                     >
                       Ask About Labs
+                    </button>
+                  </div>
+                </Card>
+
+                <Card className="group border-cyan-400/20 bg-cyan-400/10 p-6 transition hover:-translate-y-1">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <div className="text-xs uppercase tracking-[0.28em] text-cyan-300">
+                        PQC Audit
+                      </div>
+                      <div className="mt-3 text-2xl font-semibold">
+                        Post-Quantum Readiness.
+                      </div>
+                    </div>
+                    <ShieldCheck className="text-cyan-300" />
+                  </div>
+                  <p className="mt-5 text-sm leading-7 text-zinc-300">
+                    Built for government contractors and security-focused
+                    organizations that need to understand cryptographic exposure
+                    before quantum requirements become contract problems.
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <a
+                      href="/pqc"
+                      className="rounded-2xl bg-cyan-400 px-4 py-3 text-sm font-semibold text-black"
+                    >
+                      View PQC Page
+                    </a>
+                    <button
+                      onClick={() => {
+                        setExploreOpen(false);
+                        setContactOpen(true);
+                        setFormData((prev) => ({
+                          ...prev,
+                          interest: "PQC Readiness Audit",
+                        }));
+                      }}
+                      className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold"
+                    >
+                      Ask About PQC
                     </button>
                   </div>
                 </Card>
@@ -925,10 +1238,16 @@ export default function MC3GroupWebsite() {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <div className="text-xs uppercase tracking-[0.32em] text-zinc-500">Inquiry Form</div>
-                    <h3 className="mt-3 text-3xl font-semibold">Start a conversation.</h3>
+                    <div className="text-xs uppercase tracking-[0.32em] text-zinc-500">
+                      Inquiry Form
+                    </div>
+                    <h3 className="mt-3 text-3xl font-semibold">
+                      Start a conversation.
+                    </h3>
                     <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-400">
-                      Share what you are trying to improve and we will route the conversation toward the right division, system, and next step.
+                      Share what you are trying to improve and we will route the
+                      conversation toward the right division, system, and next
+                      step.
                     </p>
                   </div>
                   <button
@@ -938,9 +1257,15 @@ export default function MC3GroupWebsite() {
                     <X size={18} />
                   </button>
                 </div>
-                <form onSubmit={handleSubmit} className="mt-8 grid gap-5 md:grid-cols-2">
+
+                <form
+                  onSubmit={handleSubmit}
+                  className="mt-8 grid gap-5 md:grid-cols-2"
+                >
                   <div>
-                    <label className="mb-2 block text-sm text-zinc-400">Full Name</label>
+                    <label className="mb-2 block text-sm text-zinc-400">
+                      Full Name
+                    </label>
                     <input
                       name="name"
                       value={formData.name}
@@ -950,9 +1275,11 @@ export default function MC3GroupWebsite() {
                       required
                     />
                   </div>
-                
+
                   <div>
-                    <label className="mb-2 block text-sm text-zinc-400">Email</label>
+                    <label className="mb-2 block text-sm text-zinc-400">
+                      Email
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -963,9 +1290,11 @@ export default function MC3GroupWebsite() {
                       required
                     />
                   </div>
-                
+
                   <div>
-                    <label className="mb-2 block text-sm text-zinc-400">Company</label>
+                    <label className="mb-2 block text-sm text-zinc-400">
+                      Company
+                    </label>
                     <input
                       name="company"
                       value={formData.company}
@@ -974,9 +1303,11 @@ export default function MC3GroupWebsite() {
                       placeholder="Business name"
                     />
                   </div>
-                
+
                   <div>
-                    <label className="mb-2 block text-sm text-zinc-400">Phone</label>
+                    <label className="mb-2 block text-sm text-zinc-400">
+                      Phone
+                    </label>
                     <input
                       name="phone"
                       value={formData.phone}
@@ -985,9 +1316,11 @@ export default function MC3GroupWebsite() {
                       placeholder="(555) 555-5555"
                     />
                   </div>
-                
+
                   <div className="md:col-span-2">
-                    <label className="mb-2 block text-sm text-zinc-400">Primary Interest</label>
+                    <label className="mb-2 block text-sm text-zinc-400">
+                      Primary Interest
+                    </label>
                     <select
                       name="interest"
                       value={formData.interest}
@@ -996,25 +1329,30 @@ export default function MC3GroupWebsite() {
                     >
                       <option>MC3 Marketing</option>
                       <option>MC3 Labs</option>
+                      <option>PQC Readiness Audit</option>
                       <option>Not sure yet</option>
                     </select>
                   </div>
-                
+
                   <div className="md:col-span-2">
-                    <label className="mb-2 block text-sm text-zinc-400">What are you trying to improve?</label>
+                    <label className="mb-2 block text-sm text-zinc-400">
+                      What are you trying to improve?
+                    </label>
                     <textarea
                       rows={5}
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
                       className="w-full rounded-2xl border border-white/10 bg-black px-4 py-3.5 text-white outline-none transition focus:border-white/25"
-                      placeholder="Tell us about your goals, bottlenecks, current systems, or what feels messy right now."
+                      placeholder="Tell us about your goals, bottlenecks, current systems, security readiness needs, or what feels messy right now."
                       required
                     />
                   </div>
-                
+
                   <div className="md:col-span-2">
-                    <label className="mb-2 block text-sm text-zinc-400">Current Monthly Lead Volume</label>
+                    <label className="mb-2 block text-sm text-zinc-400">
+                      Current Monthly Lead Volume
+                    </label>
                     <select
                       name="leadVolume"
                       value={formData.leadVolume}
@@ -1026,10 +1364,11 @@ export default function MC3GroupWebsite() {
                       <option>100–500</option>
                       <option>500+</option>
                       <option>Not sure</option>
+                      <option>Not applicable</option>
                     </select>
                   </div>
-                
-                  <div className="md:col-span-2 flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between">
+
+                  <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:justify-between md:col-span-2">
                     <button
                       type="submit"
                       disabled={isSubmitting}
@@ -1037,7 +1376,7 @@ export default function MC3GroupWebsite() {
                     >
                       {isSubmitting ? "Sending..." : "Submit Inquiry"}
                     </button>
-                
+
                     {formStatus && (
                       <p className="text-sm text-zinc-300">{formStatus}</p>
                     )}
